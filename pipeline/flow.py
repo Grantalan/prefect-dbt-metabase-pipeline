@@ -79,7 +79,7 @@ def run_pipeline() -> None:
 
 
 if __name__ == "__main__":
-    run_pipeline()
+    run_pipeline.serve(name="nightly-orders", cron="0 6 * * *")
     # TODO (Day 2): replace the line above with a schedule —
     #   run_pipeline.serve(name="nightly-orders", cron="0 6 * * *")
     # (.serve() keeps running and fires the flow on the cron; Ctrl+C stops it.
