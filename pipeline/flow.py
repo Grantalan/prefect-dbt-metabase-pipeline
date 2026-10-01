@@ -27,32 +27,39 @@ Day 3 — say what happened, properly:
     for logger.info(...) (or logger.warning/error — choose levels on purpose)
 """
 
+from prefect import flow, task
+
 from pipeline import steps
 
 
+@task
 def check_source() -> None:
     """The step that talks to the outside world — the one that WILL flake."""
     steps.check_source_freshness()
     print("upstream source: reachable")
 
 
+@task
 def extract() -> None:
     """Stand-in for pulling from the real upstream (Week 2 did this against an API)."""
     steps.generate_source_data()
     print("source data extracted")
 
 
+@task
 def load() -> dict[str, int]:
     counts = steps.load_raw()
     print(f"loaded raw: {counts}")
     return counts
 
 
+@task
 def transform() -> None:
     steps.dbt_build()
     print("dbt build: models + tests green")
 
 
+@task
 def publish() -> int:
     """Copy the gold tables to the serving DuckDB Metabase reads (Week 5's serving repo)."""
     count = steps.publish_serving()
@@ -60,6 +67,7 @@ def publish() -> int:
     return count
 
 
+@flow(log_prints=True)
 def run_pipeline() -> None:
     """Source to dashboard, in order. Each call below becomes a tracked task run."""
     check_source()
